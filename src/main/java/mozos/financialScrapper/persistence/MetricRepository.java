@@ -10,5 +10,4 @@ public interface MetricRepository extends MongoRepository<MetricRecord, String> 
     List<MetricRecord> findByMetricName(String metricName);
     MetricRecord findTopByMetricNameOrderByTimestampDesc(String metricName);
     List<MetricRecord> findByMetricNameAndTimestampAfter(String metricName, Instant timestamp);
-    List<MetricRecord> findByMetricNameAndPushedToPrometheusFalse(String metricName);
 }

@@ -17,5 +17,4 @@ public class MetricRecord {
     private Double value;
     private Instant timestamp;
     private Map<String, Object> tags;
-    private boolean pushedToPrometheus;
 }

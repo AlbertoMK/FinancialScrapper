@@ -110,7 +110,6 @@ public class FredScrapper extends MetricScrapper {
 
                     String valueStr = obs.get("value").asText();
                     record.setValue(valueStr.equalsIgnoreCase("null") ? null : Double.parseDouble(valueStr));
-                    record.setPushedToPrometheus(false);
                     records.add(record);
                 }
             }

@@ -36,18 +36,7 @@ public class MetricStorageService {
         return metricRepository.findByMetricName(metric.getDisplayName());
     }
 
-    public List<MetricRecord> getUnpushedRecordsByMetric(Metric metric) {
-        return metricRepository.findByMetricNameAndPushedToPrometheusFalse(metric.getDisplayName());
-    }
-
     public List<MetricRecord> getRecordsAfterInstant(Metric metric, Instant instant) {
         return metricRepository.findByMetricNameAndTimestampAfter(metric.getDisplayName(), instant);
-    }
-
-    public void markRecordsAsPushed(List<MetricRecord> records) {
-        List<String> ids = records.stream().map(MetricRecord::getId).toList();
-        Query query = new Query(Criteria.where("_id").in(ids));
-        Update update = new Update().set("pushedToPrometheus", true);
-        mongoTemplate.updateMulti(query, update, MetricRecord.class);
     }
 }
