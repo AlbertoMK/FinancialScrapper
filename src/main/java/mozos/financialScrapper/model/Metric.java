@@ -7,7 +7,9 @@ public enum Metric {
 
     LIQUIDITY("M2 Money Supply", FredScrapper.class), // Mide la liquidez en EEUU en Billions en el mercado
     FED_RATE("Federal Funds Rate", FredScrapper.class), // Mide las tasas de interés fijadas por la FED
-    INFLATION_INDEX("Consumer Price Index", FredScrapper.class); // Índice que muestra el IPC de EEUU
+    INFLATION_INDEX("Consumer Price Index", FredScrapper.class), // Índice que muestra el IPC de EEUU
+    SP500_PRICE("SP500 Price", FredScrapper.class), // Precios del ínidice SP500 en $
+    GERMANY_LONG_TERM_BONDS("Germany 10-year bond rates", FredScrapper.class); // Intereses provistos por los bonos alemanes a 10 años
 
     private final String displayName;
     private final Class<? extends MetricScrapper> scrapperClass;

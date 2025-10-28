@@ -23,6 +23,8 @@ public class FredScrapper extends MetricScrapper {
     private static String LIQUIDITY_SUBRESOURCE = "M2SL";
     private static String FED_RATE_SUBRESOURCE = "FEDFUNDS";
     private static String INFLATION_INDEX_SUBRESOURCE = "CPIAUCSL";
+    private static String SP500_SUBRESOURCE = "SP500";
+    private static String GERMANY_10_YEAR_BONDS = "IRLTLT01DEM156N";
 
     private MetricStorageService metricStorageService;
 
@@ -64,6 +66,10 @@ public class FredScrapper extends MetricScrapper {
             case INFLATION_INDEX:
                 subresource = INFLATION_INDEX_SUBRESOURCE;
                 break;
+            case SP500_PRICE:
+                subresource = SP500_SUBRESOURCE;
+            case GERMANY_LONG_TERM_BONDS:
+                subresource = GERMANY_10_YEAR_BONDS;
             default:
                 subresource = null;
         }
