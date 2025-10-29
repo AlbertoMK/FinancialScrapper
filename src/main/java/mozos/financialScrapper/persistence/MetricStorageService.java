@@ -1,5 +1,6 @@
 package mozos.financialScrapper.persistence;
 
+import lombok.extern.log4j.Log4j2;
 import mozos.financialScrapper.model.Metric;
 import mozos.financialScrapper.model.MetricRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 @Service
 public class MetricStorageService {
     private final MetricRepository metricRepository;
@@ -25,6 +27,7 @@ public class MetricStorageService {
     }
 
     public void saveAll(List<MetricRecord> records) {
+        log.info("Saved {} new records", records.size());
         metricRepository.saveAll(records);
     }
 

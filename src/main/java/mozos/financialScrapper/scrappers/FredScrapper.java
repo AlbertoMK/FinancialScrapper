@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +45,16 @@ public class FredScrapper extends MetricScrapper {
     @Override
     public List<MetricRecord> fetchAndStoreMetric(Metric metric) {
         String subresource = getSubresource(metric);
-        Optional<MetricRecord> lastRecordOptinal = metricStorageService.getLastRecord(metric.getDisplayName());
+        Optional<MetricRecord> lastRecordOptional = metricStorageService.getLastRecord(metric.getDisplayName());
 
-        Instant lastRecordTimestamp = lastRecordOptinal.isPresent() ? lastRecordOptinal.get().getTimestamp(): null;
+        Instant lastRecordTimestamp = lastRecordOptional.isPresent() ? lastRecordOptional.get().getTimestamp() : null;
         List<MetricRecord> result = parseRawResponse(callFredSubresource(subresource, lastRecordTimestamp));
+        // Volviéndolo a poner ya que hay un fallo en la API que a veces devuelve valores posteriores al startDate indicado.
+        if (lastRecordTimestamp != null) {
+            result = result.stream().filter(r -> r.getTimestamp().isAfter(lastRecordTimestamp)).toList();
+        }
         result.forEach(m -> m.setMetricName(metric.getDisplayName()));
         metricStorageService.saveAll(result);
-        log.info("Metric values stored for metric {}", metric.getDisplayName());
         return result;
     }
 
@@ -68,8 +72,10 @@ public class FredScrapper extends MetricScrapper {
                 break;
             case SP500_PRICE:
                 subresource = SP500_SUBRESOURCE;
+                break;
             case GERMANY_LONG_TERM_BONDS:
                 subresource = GERMANY_10_YEAR_BONDS;
+                break;
             default:
                 subresource = null;
         }
@@ -82,7 +88,6 @@ public class FredScrapper extends MetricScrapper {
     private String callFredSubresource(String subresource, Instant startDate) {
 
         String startDateString = this.instantToYYYYMMDD(startDate);
-
         UriComponentsBuilder urlBuilder = UriComponentsBuilder.fromUriString("https://api.stlouisfed.org/fred/series/observations")
                 .queryParam("series_id", subresource)
                 .queryParam("api_key", fredApiKey)
@@ -109,8 +114,14 @@ public class FredScrapper extends MetricScrapper {
                     record.setTimestamp(Instant.parse(obs.get("date").asText() + "T00:00:00Z"));
 
                     String valueStr = obs.get("value").asText();
-                    record.setValue(valueStr.equalsIgnoreCase("null") ? null : Double.parseDouble(valueStr));
-                    records.add(record);
+                    double valueDouble;
+                    try {
+                        valueDouble = Double.parseDouble(valueStr);
+                        record.setValue(valueStr.equalsIgnoreCase("null") ? null : valueDouble);
+                        records.add(record);
+                    } catch (NumberFormatException ex) {
+                        log.debug("Wrong value format found - not storing");
+                    }
                 }
             }
         } catch (Exception e) {

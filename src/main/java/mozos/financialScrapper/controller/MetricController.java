@@ -16,7 +16,6 @@ import java.util.List;
 
 @Log4j2
 @RestController
-@RequestMapping("prometheus")
 public class MetricController {
 
     private MetricStorageService metricStorageService;
@@ -26,7 +25,7 @@ public class MetricController {
         this.metricStorageService= metricStorageService;
     }
 
-    @GetMapping(value = "metric/{metricName} produces = MediaType.APPLICATION_JSON_VALUE")
+    @GetMapping(value = "metric/{metricName}")
     public List<MetricRecord> getMetric(@PathVariable String metricName) {
         Metric metric;
         try {
@@ -36,7 +35,7 @@ public class MetricController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Metric " + metricName + " not found");
         }
         List<MetricRecord> records = metricStorageService.getAllRecords(metric);
-        log.info("Latest records for metric {} marked as pushed");
+        log.info("Retreiving {} records for metric {}", records.size(), metricName);
         return records;
     }
 }
