@@ -14,8 +14,12 @@ public abstract class MetricScrapper {
     protected final WebClient webClient;
 
     protected MetricScrapper() {
-        this.webClient = WebClient.builder().build();
+        this.webClient = WebClient.builder()
+                .codecs(configurer -> configurer.defaultCodecs()
+                        .maxInMemorySize(16 * 1024 * 1024))
+                .build();
     }
+
 
     public abstract String getScrapperName();
     public abstract List<MetricRecord> fetchAndStoreMetric(Metric metric);

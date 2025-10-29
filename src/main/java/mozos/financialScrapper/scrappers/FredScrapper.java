@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,14 @@ public class FredScrapper extends MetricScrapper {
     private static String LIQUIDITY_SUBRESOURCE = "M2SL";
     private static String FED_RATE_SUBRESOURCE = "FEDFUNDS";
     private static String INFLATION_INDEX_SUBRESOURCE = "CPIAUCSL";
-    private static String SP500_SUBRESOURCE = "SP500";
-    private static String GERMANY_10_YEAR_BONDS = "IRLTLT01DEM156N";
+    private static String GERMANY_10_YEAR_BONDS_RESOURCE = "IRLTLT01DEM156N";
+    private static String VIX_SUBRESOURCE = "VIXCLS";
+    private static String BRENT_SUBRESOURCE = "DCOILBRENTEU";
+    private static String SENTIMENT_SUBRESOURCE = "UMCSENT";
+    private static String PIB_SUBRESOURCE = "GDP";
+
+    @Value("${fred.api-key}")
+    private String fredApiKey;
 
     private MetricStorageService metricStorageService;
 
@@ -33,9 +38,6 @@ public class FredScrapper extends MetricScrapper {
         super();
         this.metricStorageService = metricStorageService;
     }
-
-    @Value("${fred.api-key}")
-    private String fredApiKey;
 
     @Override
     public String getScrapperName() {
@@ -70,11 +72,20 @@ public class FredScrapper extends MetricScrapper {
             case INFLATION_INDEX:
                 subresource = INFLATION_INDEX_SUBRESOURCE;
                 break;
-            case SP500_PRICE:
-                subresource = SP500_SUBRESOURCE;
-                break;
             case GERMANY_LONG_TERM_BONDS:
-                subresource = GERMANY_10_YEAR_BONDS;
+                subresource = GERMANY_10_YEAR_BONDS_RESOURCE;
+                break;
+            case VIX:
+                subresource = VIX_SUBRESOURCE;
+                break;
+            case PETROL:
+                subresource = BRENT_SUBRESOURCE;
+                break;
+            case SENTIMENT:
+                subresource = SENTIMENT_SUBRESOURCE;
+                break;
+            case PIB:
+                subresource = PIB_SUBRESOURCE;
                 break;
             default:
                 subresource = null;
